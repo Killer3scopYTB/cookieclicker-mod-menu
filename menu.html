@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie Clicker God Menu</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { margin: 0; }
+    #modMenu {
+      position: fixed;
+      top: 100px;
+      left: 100px;
+      background: #1e1e2f;
+      color: white;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 9999;
+      min-width: 300px;
+      max-width: 320px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .tab {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .tab button {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .tab button.active {
+      background: #6657ff;
+    }
+    .tabcontent {
+      display: none;
+    }
+    .tabcontent.active {
+      display: block;
+    }
+    button.action {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      background: #444;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      transition: 0.2s;
+    }
+    button.action:hover {
+      background: #6657ff;
+    }
+    input[type=number] {
+      width: 100%;
+      padding: 6px;
+      margin: 4px 0;
+      border-radius: 6px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="modMenu">
+    <div class="tab">
+      <button onclick="switchTab('economy')" class="active">💰 Économie</button>
+      <button onclick="switchTab('golden')">🌟 Cookies</button>
+      <button onclick="switchTab('unlock')">🔓 Débloquer</button>
+      <button onclick="switchTab('fun')">🎮 Fun</button>
+    </div>
+    <div id="economy" class="tabcontent active">
+      <button class="action" onclick="Game.cookies+=1000000">+1M Cookies</button>
+      <input type="number" id="cookieAmount" placeholder="Montant">
+      <button class="action" onclick="setCookies()">Set Cookies</button>
+      <button class="action" onclick="Game.cookies=0">Reset</button>
+    </div>
+    <div id="golden" class="tabcontent">
+      <button class="action" onclick="Game.goldenCookie.spawn()">Golden Cookie</button>
+      <button class="action" onclick="for(let i=0;i<10;i++)Game.goldenCookie.spawn()">x10 Golden</button>
+    </div>
+    <div id="unlock" class="tabcontent">
+      <button class="action" onclick="unlockAll()">Unlock All</button>
+      <button class="action" onclick="unlockAchievements()">Achievements</button>
+    </div>
+    <div id="fun" class="tabcontent">
+      <button class="action" onclick="massiveExplosion()">💣 Explosion</button>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key.toLowerCase() === 'e') {
+        const menu = document.getElementById('modMenu');
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+      }
+    });
+
+    let currentTab = 'economy';
+    function switchTab(tab) {
+      document.querySelectorAll('.tabcontent').forEach(el => el.classList.remove('active'));
+      document.querySelector(`#${tab}`).classList.add('active');
+      document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function setCookies() {
+      const amount = parseFloat(document.getElementById('cookieAmount').value);
+      if (!isNaN(amount)) Game.cookies = amount;
+    }
+
+    function unlockAll() {
+      for (let i in Game.UpgradesById) Game.UpgradesById[i].unlock();
+    }
+
+    function unlockAchievements() {
+      for (let i in Game.AchievementsById) Game.AchievementsById[i].unlock();
+    }
+
+    function massiveExplosion() {
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => Game.goldenCookie.spawn(), i * 100);
+      }
+    }
+  </script>
+</body>
+</html>
