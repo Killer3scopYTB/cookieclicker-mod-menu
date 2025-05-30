@@ -1,134 +1,314 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cookie Clicker God Menu</title>
-  <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { margin: 0; }
-    #modMenu {
-      position: fixed;
-      top: 100px;
-      left: 100px;
-      background: #1e1e2f;
-      color: white;
-      border-radius: 12px;
-      padding: 16px;
-      z-index: 9999;
-      min-width: 300px;
-      max-width: 320px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      display: none;
-    }
-    .tab {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .tab button {
-      flex: 1;
-      padding: 6px;
-      border: none;
-      border-radius: 8px;
-      background: #333;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .tab button.active {
-      background: #6657ff;
-    }
-    .tabcontent {
-      display: none;
-    }
-    .tabcontent.active {
-      display: block;
-    }
-    button.action {
-      width: 100%;
-      padding: 8px;
-      margin: 5px 0;
-      background: #444;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      transition: 0.2s;
-    }
-    button.action:hover {
-      background: #6657ff;
-    }
-    input[type=number] {
-      width: 100%;
-      padding: 6px;
-      margin: 4px 0;
-      border-radius: 6px;
-      border: none;
-    }
-  </style>
-</head>
-<body>
-  <div id="modMenu">
-    <div class="tab">
-      <button onclick="switchTab('economy')" class="active">💰 Économie</button>
-      <button onclick="switchTab('golden')">🌟 Cookies</button>
-      <button onclick="switchTab('unlock')">🔓 Débloquer</button>
-      <button onclick="switchTab('fun')">🎮 Fun</button>
+<style>
+  #modMenu {
+    position: fixed;
+    top: 100px;
+    left: 100px;
+    width: 350px;
+    background: rgba(20, 20, 20, 0.95);
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #000;
+    z-index: 9999;
+    user-select: none;
+  }
+  #modMenuHeader {
+    background: #333;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: move;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    text-align: center;
+  }
+  #modMenuTabs {
+    display: flex;
+    border-bottom: 1px solid #444;
+  }
+  .modMenuTab {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    cursor: pointer;
+    background: #222;
+    border-right: 1px solid #444;
+    font-weight: bold;
+  }
+  .modMenuTab:last-child {
+    border-right: none;
+  }
+  .modMenuTab.active {
+    background: #555;
+  }
+  #modMenuContent {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  button {
+    width: 100%;
+    margin: 6px 0;
+    padding: 8px;
+    background: #555;
+    border: none;
+    border-radius: 6px;
+    color: #eee;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  button:hover {
+    background: #777;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    cursor: pointer;
+  }
+  input[type="checkbox"] {
+    margin-right: 10px;
+  }
+  input[type="number"] {
+    width: 60px;
+    margin-left: 10px;
+    padding: 3px;
+    border-radius: 5px;
+    border: 1px solid #666;
+    background: #222;
+    color: #eee;
+  }
+  p.small {
+    font-size: 12px;
+    color: #bbb;
+    text-align: center;
+    margin-top: 10px;
+  }
+</style>
+
+<div id="modMenu" style="display:none;">
+  <div id="modMenuHeader">🍪 Cookie Clicker Mod Menu</div>
+  <div id="modMenuTabs">
+    <div class="modMenuTab active" data-tab="cheats">Cheats</div>
+    <div class="modMenuTab" data-tab="fun">Fun</div>
+    <div class="modMenuTab" data-tab="speed">Speed & Time</div>
+    <div class="modMenuTab" data-tab="settings">Settings</div>
+  </div>
+  <div id="modMenuContent">
+    <!-- Contenu des onglets -->
+    <div class="tabContent" id="tab-cheats">
+      <button onclick="Game.cookies = 999999999999">Give 999,999,999,999 Cookies</button>
+      <button onclick="Game.Earn(100000000)">Earn 100 Million Cookies</button>
+      <button onclick="Game.cookies = 0">Reset Cookies to 0</button>
+      <button onclick="Game.cookiesPs *= 10">x10 Cookies Per Second</button>
+      <button onclick="Game.cookiesPs /= 10">Reset CPS Speed</button>
+      <label>
+        Auto Clicker
+        <input type="checkbox" id="autoClickerToggle" />
+      </label>
+      <label>
+        Auto Clicks per interval:
+        <input type="number" id="autoClickerSpeed" value="1000" min="1" max="10000" />
+      </label>
     </div>
-    <div id="economy" class="tabcontent active">
-      <button class="action" onclick="Game.cookies+=1000000">+1M Cookies</button>
-      <input type="number" id="cookieAmount" placeholder="Montant">
-      <button class="action" onclick="setCookies()">Set Cookies</button>
-      <button class="action" onclick="Game.cookies=0">Reset</button>
+
+    <div class="tabContent" id="tab-fun" style="display:none;">
+      <button onclick="Game.shimmerTypes.golden = true; alert('Golden Cookies enabled!');">Enable Golden Cookies</button>
+      <button onclick="Game.shimmerTypes.reindeer = true; alert('Reindeer enabled!');">Enable Reindeer</button>
+      <button onclick="Game.Win('ThirdParty'); alert('Unlocked Third Party Achievement!');">Unlock Achievement</button>
+      <button onclick="alert('Just for fun! Have a cookie 🍪');">Show Fun Message</button>
     </div>
-    <div id="golden" class="tabcontent">
-      <button class="action" onclick="Game.goldenCookie.spawn()">Golden Cookie</button>
-      <button class="action" onclick="for(let i=0;i<10;i++)Game.goldenCookie.spawn()">x10 Golden</button>
+
+    <div class="tabContent" id="tab-speed" style="display:none;">
+      <label>
+        Set Game Speed (1 = normal):
+        <input type="number" id="gameSpeedInput" value="1" step="0.1" min="0.1" max="100" />
+      </label>
+      <button id="applySpeedBtn">Apply Speed</button>
+      <button id="resetSpeedBtn">Reset Speed</button>
     </div>
-    <div id="unlock" class="tabcontent">
-      <button class="action" onclick="unlockAll()">Unlock All</button>
-      <button class="action" onclick="unlockAchievements()">Achievements</button>
-    </div>
-    <div id="fun" class="tabcontent">
-      <button class="action" onclick="massiveExplosion()">💣 Explosion</button>
+
+    <div class="tabContent" id="tab-settings" style="display:none;">
+      <button id="saveSettingsBtn">Save Settings</button>
+      <button id="loadSettingsBtn">Load Settings</button>
+      <button id="resetSettingsBtn">Reset Settings</button>
+      <p class="small">Settings are saved in localStorage.</p>
     </div>
   </div>
-  <script>
-    document.addEventListener('keydown', function(e) {
-      if (e.key.toLowerCase() === 'e') {
-        const menu = document.getElementById('modMenu');
-        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-      }
+  <p class="small">Press <strong>E</strong> to show/hide this menu. Drag the header to move it.</p>
+</div>
+
+<script>
+  // Gestion des onglets
+  const tabs = document.querySelectorAll('.modMenuTab');
+  const tabContents = document.querySelectorAll('.tabContent');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      tabContents.forEach(content => content.style.display = 'none');
+      document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
     });
+  });
 
-    let currentTab = 'economy';
-    function switchTab(tab) {
-      document.querySelectorAll('.tabcontent').forEach(el => el.classList.remove('active'));
-      document.querySelector(`#${tab}`).classList.add('active');
-      document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+  // Affichage / masquage avec la touche E
+  const menu = document.getElementById('modMenu');
+  menu.style.display = 'none';
+
+  document.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'e') {
+      menu.style.display = (menu.style.display === 'none') ? 'block' : 'none';
+    }
+  });
+
+  // Drag & drop menu
+  const header = document.getElementById('modMenuHeader');
+  header.onmousedown = function(event) {
+    event.preventDefault();
+    let shiftX = event.clientX - menu.getBoundingClientRect().left;
+    let shiftY = event.clientY - menu.getBoundingClientRect().top;
+
+    function moveAt(pageX, pageY) {
+      menu.style.left = pageX - shiftX + 'px';
+      menu.style.top = pageY - shiftY + 'px';
     }
 
-    function setCookies() {
-      const amount = parseFloat(document.getElementById('cookieAmount').value);
-      if (!isNaN(amount)) Game.cookies = amount;
+    function onMouseMove(event) {
+      moveAt(event.pageX, event.pageY);
     }
 
-    function unlockAll() {
-      for (let i in Game.UpgradesById) Game.UpgradesById[i].unlock();
-    }
+    document.addEventListener('mousemove', onMouseMove);
 
-    function unlockAchievements() {
-      for (let i in Game.AchievementsById) Game.AchievementsById[i].unlock();
-    }
+    document.onmouseup = function() {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.onmouseup = null;
+    };
+  };
 
-    function massiveExplosion() {
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => Game.goldenCookie.spawn(), i * 100);
+  header.ondragstart = () => false;
+
+  // AutoClicker
+  let autoClickerInterval = null;
+  const autoClickerToggle = document.getElementById('autoClickerToggle');
+  const autoClickerSpeedInput = document.getElementById('autoClickerSpeed');
+
+  autoClickerToggle.addEventListener('change', () => {
+    if (autoClickerToggle.checked) {
+      let speed = parseInt(autoClickerSpeedInput.value) || 1000;
+      autoClickerInterval = setInterval(() => {
+        for (let i = 0; i < speed; i++) {
+          Game.ClickCookie();
+        }
+      }, 100);
+    } else {
+      clearInterval(autoClickerInterval);
+      autoClickerInterval = null;
+    }
+  });
+
+  autoClickerSpeedInput.addEventListener('change', () => {
+    if (autoClickerInterval) {
+      clearInterval(autoClickerInterval);
+      let speed = parseInt(autoClickerSpeedInput.value) || 1000;
+      autoClickerInterval = setInterval(() => {
+        for (let i = 0; i < speed; i++) {
+          Game.ClickCookie();
+        }
+      }, 100);
+    }
+  });
+
+  // Speed control
+  const gameSpeedInput = document.getElementById('gameSpeedInput');
+  const applySpeedBtn = document.getElementById('applySpeedBtn');
+  const resetSpeedBtn = document.getElementById('resetSpeedBtn');
+
+  applySpeedBtn.addEventListener('click', () => {
+    let speed = parseFloat(gameSpeedInput.value);
+    if (speed > 0) {
+      Game.fps = 30 * speed;  // Ajuste la vitesse du jeu (FPS)
+      Game.TICK_TIME = 1000 / (30 * speed);
+      Game.log("Speed set to x" + speed.toFixed(1));
+    } else {
+      alert("Enter a speed greater than 0");
+    }
+  });
+
+  resetSpeedBtn.addEventListener('click', () => {
+    Game.fps = 30;
+    Game.TICK_TIME = 1000 / 30;
+    gameSpeedInput.value = 1;
+    Game.log("Speed reset to normal");
+  });
+
+  // Save/load settings
+  const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+  const loadSettingsBtn = document.getElementById('loadSettingsBtn');
+  const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+
+  function saveSettings() {
+    const settings = {
+      autoClickerEnabled: autoClickerToggle.checked,
+      autoClickerSpeed: autoClickerSpeedInput.value,
+      gameSpeed: gameSpeedInput.value,
+      activeTab: Array.from(tabs).findIndex(t => t.classList.contains('active')),
+      menuPosition: {
+        left: menu.style.left,
+        top: menu.style.top
       }
+    };
+    localStorage.setItem('ccModMenuSettings', JSON.stringify(settings));
+    alert("Settings saved!");
+  }
+
+  function loadSettings() {
+    const settings = JSON.parse(localStorage.getItem('ccModMenuSettings'));
+    if (!settings) {
+      alert("No saved settings found");
+      return;
     }
-  </script>
-</body>
-</html>
+
+    autoClickerToggle.checked = settings.autoClickerEnabled;
+    autoClickerSpeedInput.value = settings.autoClickerSpeed;
+    gameSpeedInput.value = settings.gameSpeed;
+
+    // Activer onglet
+    tabs.forEach(t => t.classList.remove('active'));
+    tabContents.forEach(c => c.style.display = 'none');
+    tabs[settings.activeTab].classList.add('active');
+    tabContents[settings.activeTab].style.display = 'block';
+
+    // Position menu
+    if (settings.menuPosition) {
+      menu.style.left = settings.menuPosition.left;
+      menu.style.top = settings.menuPosition.top;
+    }
+
+    // Redémarrer autoclicker si activé
+    if (autoClickerToggle.checked) {
+      let speed = parseInt(autoClickerSpeedInput.value) || 1000;
+      autoClickerInterval = setInterval(() => {
+        for (let i = 0; i < speed; i++) {
+          Game.ClickCookie();
+        }
+      }, 100);
+    } else {
+      clearInterval(autoClickerInterval);
+      autoClickerInterval = null;
+    }
+
+    alert("Settings loaded!");
+  }
+
+  function resetSettings() {
+    localStorage.removeItem('ccModMenuSettings');
+    alert("Settings reset! Reload the page.");
+  }
+
+  saveSettingsBtn.addEventListener('click', saveSettings);
+  loadSettingsBtn.addEventListener('click', loadSettings);
+  resetSettingsBtn.addEventListener('click', resetSettings);
+</script>
